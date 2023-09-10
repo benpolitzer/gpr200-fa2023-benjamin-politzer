@@ -30,8 +30,6 @@ void main(){
 }
 )";
 
-
-
 unsigned int createVAO(float* vertexData, int numVertices)
 {
 	//Define a new buffer id
@@ -56,8 +54,8 @@ unsigned int createVAO(float* vertexData, int numVertices)
 
 unsigned int createShader(GLenum shaderType, const char* sourceCode)
 {
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	unsigned int vertexShader = glCreateShader(shaderType);
+	glShaderSource(vertexShader, 1, &sourceCode, NULL);
 	glCompileShader(vertexShader);
 	int success;
 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
