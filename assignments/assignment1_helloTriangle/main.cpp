@@ -5,12 +5,8 @@
 #include <ew/ewMath/ewMath.h>
 #include <GLFW/glfw3.h>
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 720;
-
-unsigned int createVAO(float* vertexData, int numVertices);
-unsigned int createShader(GLenum shaderType, const char* sourceCode);
-unsigned int createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
 
 unsigned int createVAO(float* vertexData, int numVertices)
@@ -20,7 +16,7 @@ unsigned int createVAO(float* vertexData, int numVertices)
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	//Allocates space and sends data to GPU
-	glBufferData(GL_ARRAY_BUFFER, numVertices, vertexData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * numVertices, vertexData, GL_STATIC_DRAW);
 
 	//Makes a VAO that sends inputs to the vertex shader
 	unsigned int vao;
@@ -94,8 +90,6 @@ int main() {
 		 0.0,  0.5, 0.0, 0.0, 0.0, 1.0, 1.0  //Top center
 	};
 
-
-
 	printf("Initializing...");
 	if (!glfwInit()) {
 		printf("GLFW failed to init!");
@@ -124,8 +118,8 @@ int main() {
 		uniform float _Time;
 		void main(){
 			Color = vColor;
-			vec3 offset = vec3(0,sin(vPos.x + _Time),0)*0.25;
-			gl_Position = vec4(vPos + offset,1.0);
+			vec3 offset = vec3(0,sin(vPos.x + _Time),0)*0.2;
+			gl_Position = vec4(vPos + offset,0.75);
 		}
 	)";
 
