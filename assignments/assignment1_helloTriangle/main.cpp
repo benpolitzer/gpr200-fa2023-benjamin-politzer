@@ -118,7 +118,7 @@ int main() {
 		uniform float _Time;
 		void main(){
 			Color = vColor;
-			vec3 offset = vec3(0,sin(vPos.x + _Time),0)*0.2;
+			vec3 offset = vec3(0,sin(vPos.x + _Time),0)*0.75;
 			gl_Position = vec4(vPos + offset,0.75);
 		}
 	)";
