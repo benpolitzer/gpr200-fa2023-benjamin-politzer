@@ -1,6 +1,7 @@
 #include "shader.h"
-#include "../ew/external/glad.h"
+
 using namespace std;
+
 namespace bp {
 	string loadShaderSourceFromFile(const string& filePath) {
 		ifstream fstream(filePath);
@@ -53,13 +54,16 @@ namespace bp {
 		glDeleteShader(fragmentShader);
 		return shaderProgram;
 	};
+
 	//Shader class
-	Shader::Shader(const string& vertexShader, const string& fragmentShader) {
+	Shader::Shader(const string& vertexShader, const string& fragmentShader) 
+	{
 		string vertexShaderSource = loadShaderSourceFromFile(vertexShader.c_str());
 		string fragmentShaderSource = loadShaderSourceFromFile(fragmentShader.c_str());
 		m_id = createShaderProgram(vertexShaderSource.c_str(), fragmentShaderSource.c_str());
 	}
-	void Shader::use() {
+	void Shader::use() 
+	{
 		glUseProgram(m_id);
 	}
 	void Shader::setInt(const string& name, int v) const
@@ -74,31 +78,12 @@ namespace bp {
 	{
 		glUniform2f(glGetUniformLocation(m_id, name.c_str()), x, y);
 	}
-	void setVec3(const string& name, float x, float y, float z) const
+	void Shader::setVec3(const string& name, float x, float y, float z) const
 	{
-		glUniform3f(glGetUniformLocation(m_id, name.c_str(), x, y, z);
+		glUniform3f(glGetUniformLocation(m_id, name.c_str()), x, y, z);
 	}
-	void setVec4(const string& name, float x, float y, float z, float w) const
+	void Shader::setVec4(const string& name, float x, float y, float z, float w) const
 	{
-		glUniform4f(glGetUniformLocation(m_id, name.c_str(), x, y, z, w);
+		glUniform4f(glGetUniformLocation(m_id, name.c_str()), x, y, z, w);
 	}
 }
-/*
-unsigned int createShader(GLenum shaderType, const char* sourceCode) {
-	//Create a new vertex shader object
-	unsigned int shader = glCreateShader(shaderType);
-	//Supply the shader object with source code
-	glShaderSource(shader, 1, &sourceCode, NULL);
-	//Compile the shader object
-	glCompileShader(shader);
-	int success;
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		//512 is an arbitrary length, but should be plenty of characters for our error message.
-		char infoLog[512];
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		printf("Failed to compile shader: %s", infoLog);
-	}
-	return shader;
-}
-*/

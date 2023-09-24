@@ -1,9 +1,14 @@
 #pragma once
 #include <sstream>
 #include <fstream>
+#include "../ew/external/glad.h"
+
 using namespace std;
+
 namespace bp {
 	string loadShaderSourceFromFile(const string& filePath);
+	unsigned int createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
+	unsigned int createShader(GLenum shaderType, const char* sourceCode);
 
 	class Shader {
 	public:
