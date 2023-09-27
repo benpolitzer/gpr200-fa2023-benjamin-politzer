@@ -3,10 +3,11 @@
 uniform float iTime;
 uniform vec3 iResolution;    
 
-uniform vec3 skyTop; //vec3(0.0,0.5,0.188)
-uniform vec3 skyBot; //vec3(0.22,0.5,1.0)
-uniform vec3 sunColor; //vec3(1.0,0.0,0.7)
-uniform vec3 hillColor; //vec3(0.0,0.0,0.0)
+uniform vec3 skyTop; //vec3(0.263, 0.612, 0.855)
+uniform vec3 skyBot; //vec3(0.741, 0.325, 0.0)
+uniform vec3 sunColor; //vec3(0.918, 0.839, 0.039)
+uniform vec3 hillColor; //vec3(0.184,0.251,0.157)
+uniform vec3 backHillColor; //vec3(0.129,0.173,0.106)
 uniform float sunRadius; //2
 uniform float sunSpeed; //1.0
 
@@ -32,11 +33,17 @@ void main()
     vec2 sunPos = uv + vec2(-0.02, 0.6+sin(iTime*sunSpeed)*1.0);
     col = mix(col, sunColor, smoothstep(blur,-blur,circleSDF(sunPos,sunRadius)));
     
-    float hills = 0.6 + sin(uv.x*5.0)*0.3;
+    float backHills = (0.5 + cos(uv.x*1.75)*0.75) * (1 + sin(uv.x)*1.25);
+    backHills = step(backHills,-uv.y);
+
+    col = mix(col, backHillColor, backHills);
+
+    float hills = 0.5 + (0.8 + sin(uv.x*2.0)*0.3) * (0.5*sin(uv.x)*0.5);
     hills = step(hills,-uv.y);
     
     col = mix(col, hillColor, hills);
-    
+
+
     // Output to screen
     fragColor = vec4(col,1.0);
 }

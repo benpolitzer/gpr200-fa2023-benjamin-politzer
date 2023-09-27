@@ -21,8 +21,8 @@ unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indice
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 
-const int SCREEN_WIDTH = 1080;
-const int SCREEN_HEIGHT = 720;
+const int SCREEN_WIDTH = 1920;
+const int SCREEN_HEIGHT = 1080;
 
 Vertex vertices[4] = {
 	//x    y    z    u    v
@@ -38,10 +38,11 @@ unsigned int indices[6] = {
 };
 
 bool showImGUIDemoWindow = false;
-float skyTop[3] = {0.0, 0.5, 0.188};
-float skyBot[3] = {0.22, 0.5, 1.0};
-float sunColor[3] = {1.0, 0.0, 0.7};
-float hillColor[3] = { 0.0, 0.0, 0.0 };
+float skyTop[3] = { 0.263, 0.612, 0.855 };
+float skyBot[3] = { 0.741, 0.325, 0.0 };
+float sunColor[3] = { 0.918, 0.839, 0.039 };
+float hillColor[3] = { 0.184,0.251,0.157 };
+float backHillColor[3] = { 0.129,0.173,0.106 };
 float sunRadius = 0.2;
 float sunSpeed = 1.0;
 
@@ -66,18 +67,19 @@ int main() {
 		return 1;
 	}
 
+	bp::Shader shader("assets/vertexShader.vert", "assets/alienSunsetShader.frag");
+	shader.use();
+
 	//Initialize ImGUI
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	bp::Shader shader("assets/vertexShader.vert", "assets/alienSunsetShader.frag");
 	unsigned int vao = createVAO(vertices, 4, indices, 6);
 
-	shader.use();
 	glBindVertexArray(vao);
-	shader.setVec3("iResolution", SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+	
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -86,12 +88,14 @@ int main() {
 
 		//Set uniforms
 		shader.setFloat("iTime", (float)glfwGetTime());
-		shader.setVec3("SkyTop", skyTop[0], skyTop[1], skyTop[2]);
-		shader.setVec3("SkyBottom", skyBot[0], skyBot[1], skyBot[2]);
-		shader.setVec3("SunColor", sunColor[0], sunColor[1], sunColor[2]);
-		shader.setVec3("HillColor", hillColor[0], hillColor[1], hillColor[2]);
-		shader.setFloat("SunRadius", sunRadius);
-		shader.setFloat("SunSpeed", sunSpeed);
+		shader.setVec3("iResolution", SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+		shader.setVec3("skyTop", skyTop[0], skyTop[1], skyTop[2]);
+		shader.setVec3("skyBot", skyBot[0], skyBot[1], skyBot[2]);
+		shader.setVec3("sunColor", sunColor[0], sunColor[1], sunColor[2]);
+		shader.setVec3("hillColor", hillColor[0], hillColor[1], hillColor[2]);
+		shader.setVec3("backHillColor", backHillColor[0], backHillColor[1], backHillColor[2]);
+		shader.setFloat("sunRadius", sunRadius);
+		shader.setFloat("sunSpeed", sunSpeed);
 
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
@@ -109,6 +113,7 @@ int main() {
 			ImGui::ColorEdit3("Sky Color (bottom)", skyBot);
 			ImGui::ColorEdit3("Sun Color", sunColor);
 			ImGui::ColorEdit3("Hill Color", hillColor);
+			ImGui::ColorEdit3("Back Hill Color", backHillColor);
 			ImGui::SliderFloat("Sun Radius", &sunRadius, 0.0f, 2.0f);
 			ImGui::SliderFloat("Sun Speed", &sunSpeed, 0.0f, 10.0f);
 
