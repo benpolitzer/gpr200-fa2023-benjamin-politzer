@@ -8,7 +8,8 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-#include <ew/shader.h>
+#include <bp/shader.h>
+#include <bp/texture.h>
 
 struct Vertex {
 	float x, y, z;
@@ -58,9 +59,25 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	bp::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
+
+	unsigned int kirbyTexture = bp::loadTexture("assets/kirby.png", GL_REPEAT, GL_LINEAR);
+	unsigned int wallTexture = bp::loadTexture("assets/wall.png", GL_REPEAT, GL_LINEAR);
+
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, kirbyTexture);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, wallTexture);
+
+	shader.use();
+	
+	shader.setInt("_KirbyTexture", 0);
+
+	shader.setInt("_WallTexture", 1);
 
 	glBindVertexArray(quadVAO);
 
