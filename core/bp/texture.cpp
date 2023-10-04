@@ -7,7 +7,10 @@ namespace bp {
 
 		stbi_set_flip_vertically_on_load(true);
 
-		int width, height, numComponents;
+		int width; 
+		int height; 
+		int numComponents;
+
 		unsigned char* data = stbi_load(filePath, &width, &height, &numComponents, 0);
 		if (data == NULL)
 		{
