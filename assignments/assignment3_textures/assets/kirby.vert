@@ -12,9 +12,9 @@ void main(){
 	vec3 Pos = vPos;
 
 	float movementX = sin(iTime * _MoveSpeed);
-    float movementY = cos((iTime * _MoveSpeed) * 0.5); 
+    float movementY = cos((iTime * _MoveSpeed)); 
 
-    Pos += vec3(movementX * 0.2, movementY * 0.2, 0.0);
+    Pos += vec3(movementX * 3, movementY / 0.5, 0.0);
 
-	gl_Position = vec4(Pos, 2 / _KirbySize);
+	gl_Position = vec4(Pos, 3 / _KirbySize);
 }

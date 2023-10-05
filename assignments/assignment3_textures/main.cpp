@@ -69,9 +69,11 @@ int main() {
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
+	//Background
 	unsigned int wallTexture = bp::loadTexture("assets/wall.png", GL_REPEAT, GL_LINEAR);
-	unsigned int noiseTexture = bp::loadTexture("assets/noiseTexture.png", GL_REPEAT, GL_LINEAR);
+	unsigned int noiseTexture = bp::loadTexture("assets/noiseTexture.png", GL_REPEAT, GL_LINEAgR);
 
+	//Kirby
 	unsigned int kirbyTexture = bp::loadTexture("assets/kirby.png", GL_REPEAT, GL_NEAREST);
 
 
@@ -116,8 +118,6 @@ int main() {
 
 		//Draw Quad
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
-
-
 
 
 		//Render UI
