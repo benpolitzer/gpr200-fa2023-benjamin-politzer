@@ -1,7 +1,6 @@
 #include "cameraController.h"
 namespace ew {
 	void CameraController::Move(GLFWwindow* window, ew::Camera* camera, float deltaTime) {
-		bool prevFirstMouse = firstMouse;
 		//Only allow movement if right mouse is held
 		if (!glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_2)) {
 			//Release cursor
@@ -10,7 +9,7 @@ namespace ew {
 			return;
 		}
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	
+
 		//MOUSE AIMING
 		{
 			double mouseX, mouseY;
@@ -65,10 +64,10 @@ namespace ew {
 			if (glfwGetKey(window, GLFW_KEY_A)) {
 				camera->position -= right * moveDelta;
 			}
-			if (glfwGetKey(window, GLFW_KEY_E)) {
+			if (glfwGetKey(window, GLFW_KEY_E) || glfwGetKey(window, GLFW_KEY_SPACE)) {
 				camera->position += up * moveDelta;
 			}
-			if (glfwGetKey(window, GLFW_KEY_Q)) {
+			if (glfwGetKey(window, GLFW_KEY_Q) || glfwGetKey(window, GLFW_KEY_LEFT_CONTROL)) {
 				camera->position -= up * moveDelta;
 			}
 

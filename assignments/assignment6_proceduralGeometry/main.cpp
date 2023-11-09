@@ -14,6 +14,7 @@
 #include <ew/transform.h>
 #include <ew/camera.h>
 #include <ew/cameraController.h>
+#include <bp/procGen.h>;
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void resetCamera(ew::Camera& camera, ew::CameraController& cameraController);
@@ -24,7 +25,7 @@ int SCREEN_HEIGHT = 720;
 float prevTime;
 
 struct AppSettings {
-	const char* shadingModeNames[6] = { "Solid Color","Normals","UVs","Texture","Lit","Texture Lit"};
+	const char* shadingModeNames[6] = { "Solid Color","Normals","UVs","Texture","Lit","Texture Lit" };
 	int shadingModeIndex;
 
 	ew::Vec3 bgColor = ew::Vec3(0.1f);
@@ -39,6 +40,9 @@ struct AppSettings {
 
 ew::Camera camera;
 ew::CameraController cameraController;
+
+float sphereRadius = 1.0f, cylinderHeight = 2.0f, cylinderRadius = 0.5f, planeSize = 1.0f, cubeSize = 0.5f, torusInner = 1.0f, torusOuter = 0.5f;
+int sphereSegments = 20, cylinderSegments = 8, planeDivisions = 5, torusRings = 15, torusRingsDivisions = 15;
 
 int main() {
 	printf("Initializing...");
@@ -76,16 +80,36 @@ int main() {
 	glPolygonMode(GL_FRONT_AND_BACK, appSettings.wireframe ? GL_LINE : GL_FILL);
 
 	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
-	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg",GL_REPEAT,GL_LINEAR);
+	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg", GL_REPEAT, GL_LINEAR);
 
 	//Create cube
-	ew::MeshData cubeMeshData = ew::createCube(0.5f);
+	ew::MeshData cubeMeshData = ew::createCube(cubeSize);
 	ew::Mesh cubeMesh(cubeMeshData);
+
+	//Create Mesh Data
+	ew::MeshData planeMeshData = bp::createPlane(planeSize, planeDivisions);
+	ew::MeshData cylinderMeshData = bp::createCylinder(cylinderHeight, cylinderRadius, cylinderSegments);
+	ew::MeshData sphereMeshData = bp::createSphere(sphereRadius, sphereSegments);
+	ew::MeshData torusMeshData = bp::createTorus(torusRings, torusRingsDivisions, torusInner, torusOuter);
+
+	//Create Mesh Renderer
+	ew::Mesh planeMesh(planeMeshData);
+	ew::Mesh cylinderMesh(cylinderMeshData);
+	ew::Mesh sphereMesh(sphereMeshData);
+	ew::Mesh torusMesh(torusMeshData);
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
+	ew::Transform planeTransform;
+	ew::Transform cylinderTransform;
+	ew::Transform sphereTransform;
+	ew::Transform torusTransform;
+	planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
+	cylinderTransform.position = ew::Vec3(-2.0f, 0.0f, 0.0f);
+	sphereTransform.position = ew::Vec3(-4.0f, 0.0f, 0.0f);
+	torusTransform.position = ew::Vec3(4.0f, 0.0f, 0.0f);
 
-	resetCamera(camera,cameraController);
+	resetCamera(camera, cameraController);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -98,12 +122,12 @@ int main() {
 		cameraController.Move(window, &camera, deltaTime);
 
 		//Render
-		glClearColor(appSettings.bgColor.x, appSettings.bgColor.y, appSettings.bgColor.z,1.0f);
+		glClearColor(appSettings.bgColor.x, appSettings.bgColor.y, appSettings.bgColor.z, 1.0f);
 
 		//Clear both color buffer AND depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
+
 
 		shader.use();
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
@@ -120,6 +144,14 @@ int main() {
 		//Draw cube
 		shader.setMat4("_Model", cubeTransform.getModelMatrix());
 		cubeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+		shader.setMat4("_Model", planeTransform.getModelMatrix());
+		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+		shader.setMat4("_Model", cylinderTransform.getModelMatrix());
+		cylinderMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+		shader.setMat4("_Model", sphereTransform.getModelMatrix());
+		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+		shader.setMat4("_Model", torusTransform.getModelMatrix());
+		torusMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		//Render UI
 		{
@@ -163,8 +195,41 @@ int main() {
 				else
 					glDisable(GL_CULL_FACE);
 			}
+
+			ImGui::Text("Cylinder Controls");
+			ImGui::DragFloat3("Cylinder Scale", &cylinderTransform.scale.x, 0.1f);
+			ImGui::DragFloat3("Cylinder Transform", &cylinderTransform.position.x, 0.1f);
+			ImGui::DragInt("Cylinder Segments", &cylinderSegments, 0.1, 3.0, 1000000000.0);
+			cylinderMeshData = bp::createCylinder(cylinderHeight, cylinderRadius, cylinderSegments);
+			cylinderMesh.load(cylinderMeshData);
+
+			ImGui::Text("Sphere Controls");
+			ImGui::DragFloat3("Sphere Scale", &sphereTransform.scale.x, 0.1f);
+			ImGui::DragFloat3("Sphere Transform", &sphereTransform.position.x, 0.1f);
+			ImGui::DragInt("Sphere Segments", &sphereSegments, 0.1, 3.0, 1000000000.0);
+			sphereMeshData = bp::createSphere(sphereRadius, sphereSegments);
+			sphereMesh.load(sphereMeshData);
+
+			ImGui::Text("Plane Controls");
+			ImGui::DragFloat3("Plane Size", &planeTransform.scale.x, 0.1f);
+			ImGui::DragFloat3("Plane Transform", &planeTransform.position.x, 0.1f);
+			ImGui::DragInt("Plane Divisions", &planeDivisions, 0.1, 1.0, 1000000000.0);
+			planeMeshData = bp::createPlane(planeSize, planeDivisions);
+			planeMesh.load(planeMeshData);
+
+			ImGui::Text("Cube Controls");
+			ImGui::DragFloat3("Cube Size", &cubeTransform.scale.x, 0.1f);
+			ImGui::DragFloat3("Cube Transform", &cubeTransform.position.x, 0.1f);
+
+			ImGui::Text("Torus Controls");
+			ImGui::DragFloat3("Torus Scale", &torusTransform.scale.x, 0.1f);
+			ImGui::DragFloat3("Torus Transform", &torusTransform.position.x, 0.1f);
+			ImGui::DragInt("Torus Ring Count", &torusRings, 0.1, 4.0, 1000000000.0);
+			torusRingsDivisions = torusRings;
+			torusMeshData = bp::createTorus(torusRings, torusRingsDivisions, torusInner, torusOuter);
+			torusMesh.load(torusMeshData);
 			ImGui::End();
-			
+
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
@@ -195,5 +260,3 @@ void resetCamera(ew::Camera& camera, ew::CameraController& cameraController) {
 	cameraController.yaw = 0.0f;
 	cameraController.pitch = 0.0f;
 }
-
-
